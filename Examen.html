@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Actividad 34: Imagenes y sonido - Roberto Lopez</title>
+    <title>Examen Unidad II - Roberto Lopez: Laberinto</title>
 </head>
 <body>
 
-    <h1>Actividad 34: Roberto Lopez</h1>
+    <h1>Examen Unidad II: Roberto Lopez - Laberinto</h1>
 
     <canvas id="myCanvas" width="600" height="500"></canvas>
 
@@ -16,8 +16,12 @@
         const myCanvas = document.getElementById("myCanvas"); 
         const ctx = myCanvas.getContext("2d");
 
-        var score = 0;
+        var tiempoTotal = 60;
+        var tiempoRestante = tiempoTotal;
+        var Fourze = 0;
         var Pausa = false;
+        var GameOver = false;
+        var victoria = false;
 
         class Cuadrado {
 
@@ -44,13 +48,26 @@
         img.src = "Ner-Chan.png";
 
         var player = new Cuadrado(img, 90, 90, 100, 100, 5);
-        var target = new Cuadrado("blue", 10, 10, 200, 200, null);
+        var meat = new Cuadrado("red", 10, 10, Math.random() * 580, Math.random() * 480, null);
 
-        var walls = [
-            new Cuadrado("grey", 30, 200, 250, 250, null),
-            new Cuadrado("grey", 30, 150, 100, 300, null),
-            new Cuadrado("grey", 30, 250, 400, 100, null)
+        var drinks = [
+            new Cuadrado("green", 10, 10, Math.random() * 580, Math.random() * 480, null),
+            new Cuadrado("green", 10, 10, Math.random() * 580, Math.random() * 480, null),
+            new Cuadrado("green", 10, 10, Math.random() * 580, Math.random() * 480, null),
+            new Cuadrado("green", 10, 10, Math.random() * 580, Math.random() * 480, null),
+            new Cuadrado("green", 10, 10, Math.random() * 580, Math.random() * 480, null)
         ];
+
+        var walls = [];
+
+        function Laberinto() {
+            for (let i = 0; i < 10; i++) {
+                let wall = new Cuadrado("grey", 30, 60, Math.random() * 540, Math.random() * 470, null);
+                walls.push(wall);
+            }
+        }
+
+        Laberinto();
 
         document.addEventListener('keypress', function(e) {
             switch(e.keyCode) {
@@ -75,9 +92,7 @@
         var direction = "";
 
         function update() {
-            if (Pausa) {
-                return;
-            }
+            if (Pausa || GameOver || victoria) return;
 
             let prevX = player.x;
             let prevY = player.y;
@@ -85,27 +100,19 @@
             switch(direction) {
                 case 'up':
                     player.y -= player.speed;
-                    if (player.y <= 10) {
-                        player.y = 480;
-                    }
+                    if (player.y <= 10) player.y = 480;
                     break;
                 case 'down':
                     player.y += player.speed;
-                    if (player.y > 500) {
-                        player.y = 0;
-                    }
+                    if (player.y > 500) player.y = 0;
                     break;
                 case 'right':
                     player.x += player.speed;
-                    if (player.x > 570) {
-                        player.x = 0;
-                    }
+                    if (player.x > 570) player.x = 0;
                     break;
                 case 'left':
                     player.x -= player.speed;
-                    if (player.x <= 10) {
-                        player.x = 580;
-                    }
+                    if (player.x <= 10) player.x = 580;
                     break;
             }
 
@@ -116,14 +123,37 @@
                 }
             }
 
-            if (player.colision(target)) {
-                audio.pause();
-                audio.currentTime = 0;
-                audio.play();
-                score += 10;
-                target.x = Math.random() * (myCanvas.width - target.ancho);
-                target.y = Math.random() * (myCanvas.height - target.alto);
+            if (player.colision(meat)) {
+                victoria = true;
+                Final("¡C A Z E R I A C O M P L E T A D A!");
+                return;
             }
+
+            for (let i = 0; i < drinks.length; i++) {
+                if (player.colision(drinks[i])) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.play();
+                    Fourze++;
+                    drinks.splice(i, 1);
+                }
+            }
+
+            tiempoRestante -= 0.017;
+            if (tiempoRestante <= 0) {
+                GameOver = true;
+                Final("¡M O R I Z T E");
+            }
+        }
+
+        function Final(mensaje) {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+            ctx.fillRect(0, 0, 600, 500);
+            ctx.font = "40px Arial"; 
+            ctx.fillStyle = "white"; 
+            ctx.fillText(mensaje, 100, 250);
+
+            requestAnimationFrame(paint);
         }
 
         function paint() {
@@ -138,18 +168,29 @@
                 return;
             }
 
+            if (GameOver || victoria) {
+                return;
+            }
+
             ctx.fillStyle = "white";
             ctx.fillRect(0, 0, 600, 500);
 
             ctx.font = "15px Arial"; 
             ctx.fillStyle = "black"; 
-            ctx.fillText("Score: " + score, 510, 30);
+            ctx.fillText("Tiempo: " + Math.max(0, tiempoRestante.toFixed(2)), 510, 30);
+            ctx.fillText("Fourze: " + Fourze, 510, 50);
 
             ctx.drawImage(player.color, player.x, player.y, player.ancho, player.alto);
 
-            ctx.fillStyle = target.color;
-            ctx.fillRect(target.x, target.y, target.ancho, target.alto);
-            ctx.strokeRect(target.x, target.y, target.ancho, target.alto);
+            ctx.fillStyle = meat.color;
+            ctx.fillRect(meat.x, meat.y, meat.ancho, meat.alto);
+            ctx.strokeRect(meat.x, meat.y, meat.ancho, meat.alto);
+
+            for (let drink of drinks) {
+                ctx.fillStyle = drink.color;
+                ctx.fillRect(drink.x, drink.y, drink.ancho, drink.alto);
+                ctx.strokeRect(drink.x, drink.y, drink.ancho, drink.alto);
+            }
 
             for (let wall of walls) {
                 ctx.fillStyle = wall.color;
@@ -171,6 +212,7 @@
                     window.setTimeout(callback, 17);
                 };
         }());
+
     </script>
 </body>
 </html>

@@ -27,7 +27,6 @@
         var GameOver = false;
         var victoria = false;
 
-
         class Cuadrado {
             constructor(color, alto, ancho, x, y, speed) {
                 this.color = color;
@@ -36,6 +35,7 @@
                 this.x = x;
                 this.y = y;
                 this.speed = speed;
+                this.image = null;
             }
 
             colision(otro) {
@@ -46,81 +46,55 @@
             }
 
             dibujar() {
-                ctx.fillStyle = this.color;
-                ctx.fillRect(this.x, this.y, this.ancho, this.alto);
-                ctx.strokeRect(this.x, this.y, this.ancho, this.alto);
+                if (this.image) {
+                    ctx.drawImage(this.image, this.x, this.y, this.ancho, this.alto);
+                } else {
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.ancho, this.alto);
+                    ctx.strokeRect(this.x, this.y, this.ancho, this.alto);
+                }
             }
         }
-
 
         const audio = new Audio("Item.mp3");
         audio.preload = "auto";
 
-        var player = new Cuadrado("blue", 20, 20, 30, 30, 5);
-        var meat = new Cuadrado("red", 20, 20, 540, 540, null);
+        var img = new Image();
+        img.src = "MHW-Nergigante_Icon.webp";
+
+        var carne = new Image();
+        carne.src = "Carne_Cocida.webp";
+
+        var elixir = new Image();
+        elixir.src = "Elixir.png";
+
+        var player = new Cuadrado(null, 30, 30, 100, 100, 5);
+        player.image = img;
+
+        var meat = new Cuadrado(null, 40, 40, 535, 535, null);
+        meat.image = carne;
 
         var drinks = [
-            new Cuadrado("green", 15, 15, 60, 60, null),
-            new Cuadrado("green", 15, 15, 150, 150, null),
-            new Cuadrado("green", 15, 15, 300, 300, null),
-            new Cuadrado("green", 15, 15, 450, 150, null),
-            new Cuadrado("green", 15, 15, 540, 300, null)
+            new Cuadrado(null, 30, 30, 60, 60, null),
+            new Cuadrado(null, 30, 30, 150, 150, null),
+            new Cuadrado(null, 30, 30, 300, 300, null),
+            new Cuadrado(null, 30, 30, 450, 150, null),
+            new Cuadrado(null, 30, 30, 540, 300, null)
         ];
+        drinks.forEach(drink => drink.image = elixir);
 
         var walls = [];
 
         function Laberinto() {
-        walls = [
+            walls = [         
+                new Cuadrado(null, 600, 1, 0, 0, null),
+                new Cuadrado(null, 600, 1, 590, 10, null),
+                new Cuadrado(null, 1, 600, 0, 0, null),
+                new Cuadrado(null, 5, 600, 10, 590, null)
 
-        new Cuadrado("black", 20, 600, 0, 0, null),
-
-        new Cuadrado("black", 20, 60, 40, 160, null),
-        new Cuadrado("black", 20, 60, 120, 160, null),
-        new Cuadrado("black", 20, 60, 240, 160, null),
-        new Cuadrado("black", 20, 100, 400, 160, null),
-        new Cuadrado("black", 20, 60, 540, 160, null),
-
-        new Cuadrado("black", 20, 80, 160, 220, null),
-        new Cuadrado("black", 20, 60, 300, 220, null),
-        new Cuadrado("black", 20, 120, 460, 220, null),
-
-        new Cuadrado("black", 20, 140, 40, 280, null),
-        new Cuadrado("black", 20, 100, 260, 280, null),
-        new Cuadrado("black", 20, 120, 440, 280, null),
-
-        new Cuadrado("black", 20, 100, 120, 340, null),
-        new Cuadrado("black", 20, 60, 300, 340, null),
-        new Cuadrado("black", 20, 100, 460, 340, null),
-
-        new Cuadrado("black", 20, 140, 40, 400, null),
-        new Cuadrado("black", 20, 80, 220, 400, null),
-        new Cuadrado("black", 20, 60, 380, 400, null),
-        new Cuadrado("black", 20, 60, 500, 400, null),
-
-        new Cuadrado("black", 140, 20, 460, 120, null),
-
-        new Cuadrado("black", 100, 20, 40, 100, null),
-        new Cuadrado("black", 60, 20, 140, 160, null),
-        new Cuadrado("black", 80, 20, 300, 160, null),
-        new Cuadrado("black", 60, 20, 500, 160, null),
-
-        new Cuadrado("black", 60, 20, 40, 220, null),
-        new Cuadrado("black", 60, 20, 160, 220, null),
-        new Cuadrado("black", 80, 20, 340, 220, null),
-        new Cuadrado("black", 60, 20, 460, 220, null),
-
-        new Cuadrado("black", 80, 20, 100, 280, null),
-        new Cuadrado("black", 60, 20, 240, 280, null),
-        new Cuadrado("black", 80, 20, 420, 280, null),
-
-        new Cuadrado("black", 60, 20, 120, 340, null),
-        new Cuadrado("black", 80, 20, 260, 340, null),
-        new Cuadrado("black", 60, 20, 380, 340, null),
-
-    ];
-}
-
-
+                
+            ];
+        }
 
         Laberinto();
 
@@ -211,6 +185,31 @@
             requestAnimationFrame(paint);
         }
 
+        function Colada(cuadrado) {
+            const { x, y, ancho, alto } = cuadrado;
+            const ColadaAncho = 10;
+            const ColadaAlto = 10;
+
+            ctx.fillStyle = "rgb(192, 192, 192)";
+            for (let i = 0; i < alto; i += ColadaAlto) {
+                for (let j = 0; j < ancho; j += ColadaAncho) {
+                    ctx.fillRect(x + j, y + i, ColadaAncho, ColadaAlto);
+
+                    ctx.fillStyle = "rgb(128, 128, 128)";
+                    ctx.beginPath();
+                    ctx.moveTo(x + j, y + i + ColadaAlto / 2);
+                    ctx.lineTo(x + j + ColadaAncho, y + i + ColadaAlto / 2 - ColadaAlto / 4);
+                    ctx.lineTo(x + j + ColadaAncho, y + i + ColadaAlto / 2);
+                    ctx.lineTo(x + j, y + i + ColadaAlto);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.fillStyle = "rgb(160, 160, 160)";
+                    ctx.fillRect(x + j, y + i, ColadaAncho, 5);
+                }
+            }
+        }
+
         function paint() {
             if (Pausa) {
                 ctx.fillStyle = "rgba(198, 193, 192, 0.02)";
@@ -227,36 +226,44 @@
                 return;
             }
 
-            ctx.clearRect(0, 0, 600, 600);
+            const tileSize = 30;
+            for (let fila = 0; fila < myCanvas.height / tileSize; fila++) {
+                for (let columna = 0; columna < myCanvas.width / tileSize; columna++) {
+                    const x = columna * tileSize;
+                    const y = fila * tileSize;
 
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, 0, 600, 600);
+                    if ((fila + columna) % 2 === 0) {
+                        ctx.fillStyle = "rgba(192, 96, 0)";
+                    } else {
+                        ctx.fillStyle = "rgba(96, 32, 0)";
+                    }
+
+                    ctx.lineWidth = 2;
+                    ctx.fillRect(x, y, tileSize, tileSize);
+                }
+            }
 
             ctx.font = "15px Arial"; 
             ctx.fillStyle = "black"; 
             ctx.fillText("Tiempo: " + Math.max(0, tiempoRestante.toFixed(2)), 10, 20);
             ctx.fillText("Fourze: " + Fourze, 10, 40);
 
-            ctx.drawImage(player.color, player.x, player.y, player.ancho, player.alto);
             player.dibujar();
 
-            ctx.fillStyle = meat.color;
-            ctx.fillRect(meat.x, meat.y, meat.ancho, meat.alto);
-            ctx.strokeRect(meat.x, meat.y, meat.ancho, meat.alto);
-            meat.dibujar();
+            if (meat.image) {
+                meat.dibujar();
+            } else {
+                ctx.fillStyle = meat.color;
+                ctx.fillRect(meat.x, meat.y, meat.ancho, meat.alto);
+                ctx.strokeRect(meat.x, meat.y, meat.ancho, meat.alto);
+            }
 
             for (let drink of drinks) {
-                ctx.fillStyle = drink.color;
-                ctx.fillRect(drink.x, drink.y, drink.ancho, drink.alto);
-                ctx.strokeRect(drink.x, drink.y, drink.ancho, drink.alto);
                 drink.dibujar();
             }
 
             for (let wall of walls) {
-                ctx.fillStyle = wall.color;
-                ctx.fillRect(wall.x, wall.y, wall.ancho, wall.alto);
-                ctx.strokeRect(wall.x, wall.y, wall.ancho, wall.alto);
-                wall.dibujar();
+                Colada(wall);
             }
 
             update();
@@ -264,15 +271,6 @@
         }
 
         requestAnimationFrame(paint);
-
-        window.requestAnimationFrame = (function () {
-            return window.requestAnimationFrame ||
-                window.webkitRequestAnimationFrame ||
-                window.mozRequestAnimationFrame ||
-                function (callback) {
-                    window.setTimeout(callback, 17);
-                };
-        }());
 
     </script>
 </body>

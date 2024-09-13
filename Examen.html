@@ -238,6 +238,7 @@
             ctx.fillText("Fourze: " + Fourze, 10, 40);
 
             ctx.drawImage(player.color, player.x, player.y, player.ancho, player.alto);
+            player.dibujar();
 
             ctx.fillStyle = meat.color;
             ctx.fillRect(meat.x, meat.y, meat.ancho, meat.alto);
@@ -248,6 +249,7 @@
                 ctx.fillStyle = drink.color;
                 ctx.fillRect(drink.x, drink.y, drink.ancho, drink.alto);
                 ctx.strokeRect(drink.x, drink.y, drink.ancho, drink.alto);
+                drink.dibujar();
             }
 
             for (let wall of walls) {

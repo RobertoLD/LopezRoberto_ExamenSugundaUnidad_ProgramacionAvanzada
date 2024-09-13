@@ -4,16 +4,20 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Examen Unidad II - Roberto Lopez: Laberinto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
 
     <h1>Examen Unidad II: Roberto Lopez - Laberinto</h1>
 
-    <canvas id="myCanvas" width="600" height="500"></canvas>
+    <canvas id="myCanvas" width="600" height="600"></canvas>
 
-    <script type="text/javascript">
-
-        const myCanvas = document.getElementById("myCanvas"); 
+    <script>
+        const myCanvas = document.getElementById("myCanvas");
         const ctx = myCanvas.getContext("2d");
 
         var tiempoTotal = 60;
@@ -23,8 +27,8 @@
         var GameOver = false;
         var victoria = false;
 
-        class Cuadrado {
 
+        class Cuadrado {
             constructor(color, alto, ancho, x, y, speed) {
                 this.color = color;
                 this.alto = alto;
@@ -40,53 +44,104 @@
                          this.y + this.alto < otro.y ||
                          this.y > otro.y + otro.alto);
             }
+
+            dibujar() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.ancho, this.alto);
+                ctx.strokeRect(this.x, this.y, this.ancho, this.alto);
+            }
         }
 
+
         const audio = new Audio("Item.mp3");
+        audio.preload = "auto";
 
-        var img = new Image();
-        img.src = "Ner-Chan.png";
-
-        var player = new Cuadrado(img, 90, 90, 100, 100, 5);
-        var meat = new Cuadrado("red", 10, 10, Math.random() * 580, Math.random() * 480, null);
+        var player = new Cuadrado("blue", 20, 20, 30, 30, 5);
+        var meat = new Cuadrado("red", 20, 20, 540, 540, null);
 
         var drinks = [
-            new Cuadrado("green", 10, 10, Math.random() * 580, Math.random() * 480, null),
-            new Cuadrado("green", 10, 10, Math.random() * 580, Math.random() * 480, null),
-            new Cuadrado("green", 10, 10, Math.random() * 580, Math.random() * 480, null),
-            new Cuadrado("green", 10, 10, Math.random() * 580, Math.random() * 480, null),
-            new Cuadrado("green", 10, 10, Math.random() * 580, Math.random() * 480, null)
+            new Cuadrado("green", 15, 15, 60, 60, null),
+            new Cuadrado("green", 15, 15, 150, 150, null),
+            new Cuadrado("green", 15, 15, 300, 300, null),
+            new Cuadrado("green", 15, 15, 450, 150, null),
+            new Cuadrado("green", 15, 15, 540, 300, null)
         ];
 
         var walls = [];
 
         function Laberinto() {
-            for (let i = 0; i < 10; i++) {
-                let wall = new Cuadrado("grey", 30, 60, Math.random() * 540, Math.random() * 470, null);
-                walls.push(wall);
-            }
-        }
+        walls = [
+
+        new Cuadrado("black", 20, 600, 0, 0, null),
+
+        new Cuadrado("black", 20, 60, 40, 160, null),
+        new Cuadrado("black", 20, 60, 120, 160, null),
+        new Cuadrado("black", 20, 60, 240, 160, null),
+        new Cuadrado("black", 20, 100, 400, 160, null),
+        new Cuadrado("black", 20, 60, 540, 160, null),
+
+        new Cuadrado("black", 20, 80, 160, 220, null),
+        new Cuadrado("black", 20, 60, 300, 220, null),
+        new Cuadrado("black", 20, 120, 460, 220, null),
+
+        new Cuadrado("black", 20, 140, 40, 280, null),
+        new Cuadrado("black", 20, 100, 260, 280, null),
+        new Cuadrado("black", 20, 120, 440, 280, null),
+
+        new Cuadrado("black", 20, 100, 120, 340, null),
+        new Cuadrado("black", 20, 60, 300, 340, null),
+        new Cuadrado("black", 20, 100, 460, 340, null),
+
+        new Cuadrado("black", 20, 140, 40, 400, null),
+        new Cuadrado("black", 20, 80, 220, 400, null),
+        new Cuadrado("black", 20, 60, 380, 400, null),
+        new Cuadrado("black", 20, 60, 500, 400, null),
+
+        new Cuadrado("black", 140, 20, 460, 120, null),
+
+        new Cuadrado("black", 100, 20, 40, 100, null),
+        new Cuadrado("black", 60, 20, 140, 160, null),
+        new Cuadrado("black", 80, 20, 300, 160, null),
+        new Cuadrado("black", 60, 20, 500, 160, null),
+
+        new Cuadrado("black", 60, 20, 40, 220, null),
+        new Cuadrado("black", 60, 20, 160, 220, null),
+        new Cuadrado("black", 80, 20, 340, 220, null),
+        new Cuadrado("black", 60, 20, 460, 220, null),
+
+        new Cuadrado("black", 80, 20, 100, 280, null),
+        new Cuadrado("black", 60, 20, 240, 280, null),
+        new Cuadrado("black", 80, 20, 420, 280, null),
+
+        new Cuadrado("black", 60, 20, 120, 340, null),
+        new Cuadrado("black", 80, 20, 260, 340, null),
+        new Cuadrado("black", 60, 20, 380, 340, null),
+
+    ];
+}
+
+
 
         Laberinto();
 
-        document.addEventListener('keypress', function(e) {
+        document.addEventListener('keydown', function(e) {
             switch(e.keyCode) {
-                case 119:
+                case 87:
                     direction = 'up';
                     break;
-                case 115:
+                case 83:
                     direction = 'down';
                     break;
-                case 97:
+                case 65:
                     direction = 'left';
                     break;
-                case 100:
+                case 68:
                     direction = 'right';
                     break;
                 case 32:
                     Pausa = !Pausa;
                     break;
-            } 
+            }
         });
 
         var direction = "";
@@ -100,19 +155,19 @@
             switch(direction) {
                 case 'up':
                     player.y -= player.speed;
-                    if (player.y <= 10) player.y = 480;
+                    if (player.y < 0) player.y = 0;
                     break;
                 case 'down':
                     player.y += player.speed;
-                    if (player.y > 500) player.y = 0;
+                    if (player.y > myCanvas.height - player.alto) player.y = myCanvas.height - player.alto;
                     break;
                 case 'right':
                     player.x += player.speed;
-                    if (player.x > 570) player.x = 0;
+                    if (player.x > myCanvas.width - player.ancho) player.x = myCanvas.width - player.ancho;
                     break;
                 case 'left':
                     player.x -= player.speed;
-                    if (player.x <= 10) player.x = 580;
+                    if (player.x < 0) player.x = 0;
                     break;
             }
 
@@ -122,14 +177,8 @@
                     player.y = prevY;
                 }
             }
-
-            if (player.colision(meat)) {
-                victoria = true;
-                Final("¡C A Z E R I A C O M P L E T A D A!");
-                return;
-            }
-
-            for (let i = 0; i < drinks.length; i++) {
+            
+            for (let i = drinks.length - 1; i >= 0; i--) {
                 if (player.colision(drinks[i])) {
                     audio.pause();
                     audio.currentTime = 0;
@@ -139,19 +188,25 @@
                 }
             }
 
+            if (player.colision(meat)) {
+                victoria = true;
+                Final("¡C A Z E R I A C O M P L E T A D A!");
+                return;
+            }
+
             tiempoRestante -= 0.017;
             if (tiempoRestante <= 0) {
                 GameOver = true;
-                Final("¡M O R I Z T E");
+                Final("¡M O R I Z T E!");
             }
         }
 
         function Final(mensaje) {
             ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-            ctx.fillRect(0, 0, 600, 500);
+            ctx.fillRect(0, 0, 600, 600);
             ctx.font = "40px Arial"; 
             ctx.fillStyle = "white"; 
-            ctx.fillText(mensaje, 100, 250);
+            ctx.fillText(mensaje, 50, 300);
 
             requestAnimationFrame(paint);
         }
@@ -159,10 +214,10 @@
         function paint() {
             if (Pausa) {
                 ctx.fillStyle = "rgba(198, 193, 192, 0.02)";
-                ctx.fillRect(0, 0, 600, 500);
+                ctx.fillRect(0, 0, 600, 600);
                 ctx.font = "30px Arial"; 
                 ctx.fillStyle = "black"; 
-                ctx.fillText("P A U S A", 250, 250);
+                ctx.fillText("P A U S A", 250, 300);
 
                 requestAnimationFrame(paint);
                 return;
@@ -172,19 +227,22 @@
                 return;
             }
 
+            ctx.clearRect(0, 0, 600, 600);
+
             ctx.fillStyle = "white";
-            ctx.fillRect(0, 0, 600, 500);
+            ctx.fillRect(0, 0, 600, 600);
 
             ctx.font = "15px Arial"; 
             ctx.fillStyle = "black"; 
-            ctx.fillText("Tiempo: " + Math.max(0, tiempoRestante.toFixed(2)), 510, 30);
-            ctx.fillText("Fourze: " + Fourze, 510, 50);
+            ctx.fillText("Tiempo: " + Math.max(0, tiempoRestante.toFixed(2)), 10, 20);
+            ctx.fillText("Fourze: " + Fourze, 10, 40);
 
             ctx.drawImage(player.color, player.x, player.y, player.ancho, player.alto);
 
             ctx.fillStyle = meat.color;
             ctx.fillRect(meat.x, meat.y, meat.ancho, meat.alto);
             ctx.strokeRect(meat.x, meat.y, meat.ancho, meat.alto);
+            meat.dibujar();
 
             for (let drink of drinks) {
                 ctx.fillStyle = drink.color;
@@ -196,6 +254,7 @@
                 ctx.fillStyle = wall.color;
                 ctx.fillRect(wall.x, wall.y, wall.ancho, wall.alto);
                 ctx.strokeRect(wall.x, wall.y, wall.ancho, wall.alto);
+                wall.dibujar();
             }
 
             update();

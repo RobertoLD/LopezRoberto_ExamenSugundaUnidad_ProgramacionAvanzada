@@ -20,7 +20,7 @@
         const myCanvas = document.getElementById("myCanvas");
         const ctx = myCanvas.getContext("2d");
 
-        var tiempoTotal = 60;
+        var tiempoTotal = 30;
         var tiempoRestante = tiempoTotal;
         var Fourze = 0;
         var Pausa = false;
@@ -59,6 +59,9 @@
         const audio = new Audio("Item.mp3");
         audio.preload = "auto";
 
+        const fondo = new Audio("Fondo.mp3");
+        fondo.preload = "auto";
+
         var img = new Image();
         img.src = "MHW-Nergigante_Icon.webp";
 
@@ -68,7 +71,10 @@
         var elixir = new Image();
         elixir.src = "Elixir.png";
 
-        var player = new Cuadrado(null, 30, 30, 100, 100, 5);
+        var Obstaculo = new Image();
+        Obstaculo.src = "Obstaculo.png";
+
+        var player = new Cuadrado(null, 50, 50, 20, 20, 5);
         player.image = img;
 
         var meat = new Cuadrado(null, 40, 40, 535, 535, null);
@@ -82,6 +88,15 @@
             new Cuadrado(null, 30, 30, 540, 300, null)
         ];
         drinks.forEach(drink => drink.image = elixir);
+
+        var obstaculos = [
+            new Cuadrado(null, 30, 40, 150, 300, null),
+            new Cuadrado(null, 30, 40, 100, 100, null),
+            new Cuadrado(null, 30, 40, 200, 200, null),
+            new Cuadrado(null, 30, 40, 350, 70, null),
+            new Cuadrado(null, 30, 40, 440, 500, null)
+        ];
+        obstaculos.forEach(obstaculos => obstaculos.image = Obstaculo);
 
         var walls = [];
 
@@ -164,23 +179,40 @@
 
             if (player.colision(meat)) {
                 victoria = true;
-                Final("¡C A Z E R I A C O M P L E T A D A!");
+                final2("¡C A S E R I A  C O M P L E T A D A!");
                 return;
             }
 
             tiempoRestante -= 0.017;
             if (tiempoRestante <= 0) {
                 GameOver = true;
-                Final("¡M O R I Z T E!");
+                final1("¡M O R I S T E!");
             }
         }
 
-        function Final(mensaje) {
+        function Final1(mensaje) {
+
             ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
             ctx.fillRect(0, 0, 600, 600);
             ctx.font = "40px Arial"; 
             ctx.fillStyle = "white"; 
-            ctx.fillText(mensaje, 50, 300);
+            ctx.fillText(mensaje, 150, 300);
+
+            requestAnimationFrame(paint);
+        }
+
+        function final2(mensaje) {
+
+            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+            ctx.fillRect(0, 0, 600, 600);
+
+            ctx.font = "32px Arial"; 
+            ctx.fillStyle = "white"; 
+            ctx.fillText(mensaje, 38, 300);
+
+            ctx.font = "32px Arial"; 
+            ctx.fillStyle = "red"; 
+            ctx.fillText(mensaje, 40, 300);
 
             requestAnimationFrame(paint);
         }
@@ -216,7 +248,7 @@
                 ctx.fillRect(0, 0, 600, 600);
                 ctx.font = "30px Arial"; 
                 ctx.fillStyle = "black"; 
-                ctx.fillText("P A U S A", 250, 300);
+                ctx.fillText("P A U S A", 300, 300);
 
                 requestAnimationFrame(paint);
                 return;
@@ -243,23 +275,25 @@
                 }
             }
 
-            ctx.font = "15px Arial"; 
-            ctx.fillStyle = "black"; 
-            ctx.fillText("Tiempo: " + Math.max(0, tiempoRestante.toFixed(2)), 10, 20);
-            ctx.fillText("Fourze: " + Fourze, 10, 40);
+            ctx.font = "17px Arial"; 
+            ctx.fillStyle = "white"; 
+            ctx.fillText("Tiempo: " + Math.max(0, tiempoRestante.toFixed(2)), 500, 30);
+            ctx.fillText("Fourze: " + Fourze, 500, 60);
 
             player.dibujar();
 
+            fondo.play();
+
             if (meat.image) {
                 meat.dibujar();
-            } else {
-                ctx.fillStyle = meat.color;
-                ctx.fillRect(meat.x, meat.y, meat.ancho, meat.alto);
-                ctx.strokeRect(meat.x, meat.y, meat.ancho, meat.alto);
             }
 
             for (let drink of drinks) {
                 drink.dibujar();
+            }
+
+            for (let Obstaculo of obstaculos) {
+                Obstaculo.dibujar();
             }
 
             for (let wall of walls) {

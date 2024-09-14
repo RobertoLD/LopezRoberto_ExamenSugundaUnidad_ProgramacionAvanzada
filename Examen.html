@@ -20,7 +20,7 @@
         const myCanvas = document.getElementById("myCanvas");
         const ctx = myCanvas.getContext("2d");
 
-        var tiempoTotal = 30;
+        var tiempoTotal = 3;
         var tiempoRestante = tiempoTotal;
         var Fourze = 0;
         var Pausa = false;
@@ -57,10 +57,12 @@
         }
 
         const audio = new Audio("Item.mp3");
-        audio.preload = "auto";
 
         const fondo = new Audio("Fondo.mp3");
-        fondo.preload = "auto";
+
+        const roca = new Audio("Roca.mp3");
+
+        const win = new Audio("Victoria.mp3");
 
         var img = new Image();
         img.src = "MHW-Nergigante_Icon.webp";
@@ -166,7 +168,24 @@
                     player.y = prevY;
                 }
             }
-            
+
+            for (let i = obstaculos.length - 1; i >= 0; i--) {
+                if (player.colision(obstaculos[i])) {
+                    if (Fourze > 0) {
+
+                        roca.pause();
+                        roca.currentTime = 0;
+                        roca.play();
+                        Fourze--;
+                        obstaculos.splice(i, 1);
+                    } else {
+
+                        player.x = prevX;
+                        player.y = prevY;
+                    }
+                }
+            }
+                    
             for (let i = drinks.length - 1; i >= 0; i--) {
                 if (player.colision(drinks[i])) {
                     audio.pause();
@@ -178,28 +197,28 @@
             }
 
             if (player.colision(meat)) {
+                win.play();
                 victoria = true;
-                final2("¡C A S E R I A  C O M P L E T A D A!");
+                Final2("¡C A S E R I A  C O M P L E T A D A!");
                 return;
             }
 
             tiempoRestante -= 0.017;
             if (tiempoRestante <= 0) {
                 GameOver = true;
-                final1("¡M O R I S T E!");
+                Final1("¡M O R I S T E!");
             }
         }
 
         function Final1(mensaje) {
-
             ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
             ctx.fillRect(0, 0, 600, 600);
+
             ctx.font = "40px Arial"; 
             ctx.fillStyle = "white"; 
             ctx.fillText(mensaje, 150, 300);
-
-            requestAnimationFrame(paint);
         }
+
 
         function final2(mensaje) {
 
@@ -243,18 +262,22 @@
         }
 
         function paint() {
-            if (Pausa) {
+            if (!Pausa) {
+                fondo.play();
+            } else {
+                fondo.pause();
                 ctx.fillStyle = "rgba(198, 193, 192, 0.02)";
                 ctx.fillRect(0, 0, 600, 600);
                 ctx.font = "30px Arial"; 
                 ctx.fillStyle = "black"; 
-                ctx.fillText("P A U S A", 300, 300);
+                ctx.fillText("P A U S A", 240, 300);
 
                 requestAnimationFrame(paint);
                 return;
             }
 
             if (GameOver || victoria) {
+                fondo.pause();
                 return;
             }
 
@@ -281,8 +304,6 @@
             ctx.fillText("Fourze: " + Fourze, 500, 60);
 
             player.dibujar();
-
-            fondo.play();
 
             if (meat.image) {
                 meat.dibujar();
